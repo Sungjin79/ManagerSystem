@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MUSINSA Manager System</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon.png">
+    <!-- Custom Stylesheet -->
+    <link href="/static/plugins/chartist/css/chartist.min.css" rel="stylesheet">
+    <link href="/static/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css" rel="stylesheet">
+    <link href="/static/plugins/tables/css/datatable/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+        <!--**********************************
+            Nav header start
+        ***********************************-->
+        <div class="nav-header">
+            <div class="brand-logo">
+                <a href="/">
+                    <b class="logo-abbr"><i class="fa fa-check"></i></b>
+                    <span class="logo-compact"><i class="fa fa-check"></i></span>
+                    <span class="brand-title">
+                        <!-- <img src="/static/images/logo-text.png" alt=""> -->
+                        <div class="media">
+                            <span class="card-widget__icon"><i class="fa fa-check"></i></span>
+                            <div class="media-body">
+                                <h2 class="card-widget__title">물류운영</h2>                                
+                            </div>
+                        </div>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!--**********************************
+            Nav header end
+        ***********************************-->
+
+        <!--**********************************
+            Header start
+        ***********************************-->
+        <div class="header">    
+            <div class="header-content clearfix">
+                
+                <div class="nav-control">
+                    <div class="hamburger">
+                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+                    </div>
+                </div>
+                <div class="header-left">
+                    <div class="input-group icons">
+                        
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-clock-outline"></i></span>
+                        </div>
+                        <div class="text-center">
+                            <!-- <button type="button" class="btn mb-1 btn-black" onclick="location.href='{{url_for('main.reload_all')}}'">Update Data <span class="btn-icon-right"><i class="fa fa-undo"></i></span>
+                            </button>                            -->
+                        </div>
+                        <div class="drop-down animated flipInX d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <!--**********************************
+            Header end ti-comment-alt
+        ***********************************-->
+
+        <!--**********************************
+            Sidebar start
+        ***********************************-->
+        <div class="nk-sidebar">           
+            <div class="nk-nav-scroll">
+                <ul class="metismenu" id="menu">
+                    <li class="nav-label">Category</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Dashboard</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="{{url_for('main.index')}}">Home</a></li>
+                            <li><a href="{{url_for('excel.excelDownload', pDate='')}}">Excel Down</a></li>
+                            <li><a href="{{url_for('schedule.scheduleIndex')}}">Scheduler</a></li>
+                        </ul>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!--**********************************
+            Sidebar end
+        ***********************************-->
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Excel Down</a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <form action="{{url_for('schedule.saveNor')}}" method="POST" name="tableNor" id="tableNor">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn mb-1 btn-outline-info" onclick="deleteall()">초기화</button>
+                    <script>
+                        function deleteall(){
+                            location.href="{{url_for('schedule.deleteAll')}}"
+                        }
+                    </script>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" class="btn mb-1 btn-outline-info">저장</button>                                    
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <h4 class="card-title">무신사 정기 스케줄러</h4>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" name="table1">
+                                                <thead>
+                                                    <tr class='table-danger'>
+                                                        <th>구분</th>
+                                                        <th>시간</th>
+                                                        <th>체크</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in resultData%}
+                                                    <tr class='table-danger'>
+                                                        <td>{{item[0]}}</td>
+                                                        <td>{{item[1]}}</td>
+                                                        <td><input type="checkbox" id =t1{{item[1]}} name ="test" value="{{item[1]}}"></td>
+                                                        <script>
+                                                            var chk ='{{item[2]}}'
+                                                            if(chk==1){
+                                                                document.getElementById('t1'+'{{item[1]}}').checked =true
+                                                            }
+                                                        </script>
+                                                    </tr>
+                                                    {% endfor %}  
+                                                </tbody>                                                                                                    
+                                            </table>
+                                        </div>
+                                    </div>                             
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">무신사 명품 스케줄러                                        
+                                    </h4>
+                                    <div class="table-responsive text-white" >
+                                        <table name="tableBtq" id="tableBtq" class="table table-bordered">
+                                            <thead>
+                                                <tr class='table-btq'>
+                                                    <th>구분</th>
+                                                    <th>시간</th>
+                                                    <th>체크</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for items in resultDatabtq%}
+                                                <tr class='table-btq'>
+                                                    <td>{{items[0]}}</td>
+                                                    <td>{{items[1]}}</td>
+                                                    <td><input type="checkbox" id =t2{{items[1]}} name ="test1" value="{{items[1]}}"></td>
+                                                    <script>
+                                                        var chk ='{{items[2]}}'
+                                                        if(chk==1){
+                                                            document.getElementById('t2'+'{{items[1]}}').checked =true
+                                                        }
+                                                    </script>
+                                                </tr>
+                                                {% endfor %}  
+                                            </tbody>                                                                                                    
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>               
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+        
+        
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Designed & Developed by </p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <script src="/static/plugins/common/common.min.js"></script>
+    <script src="/static/js/custom.min.js"></script>
+    <script src="/static/js/settings.js"></script>
+    <script src="/static/js/gleek.js"></script>
+    <script src="/static/js/styleSwitcher.js"></script>
+
+    <script src="/static/plugins/tables/js/jquery.dataTables.min.js"></script>
+    <script src="/static/plugins/tables/js/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/plugins/tables/js/datatable-init/datatable-basic.min.js"></script>
+
+</body>
+
+</html>

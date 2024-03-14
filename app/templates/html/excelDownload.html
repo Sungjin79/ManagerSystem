@@ -1,0 +1,484 @@
+{% with messages = get_flashed_messages()%}
+{% if messages %}
+<script>
+    alert("{{messages[-1]}}")
+</script>
+{% endif %}
+{% endwith %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MUSINSA Manager System</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon.png">
+    <!-- Custom Stylesheet -->
+    <link href="/static/plugins/chartist/css/chartist.min.css" rel="stylesheet">
+    <link href="/static/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css" rel="stylesheet">
+    <link href="/static/plugins/tables/css/datatable/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+        <!--**********************************
+            Nav header start
+        ***********************************-->
+        <div class="nav-header">
+            <div class="brand-logo">
+                <a href="/">
+                    <b class="logo-abbr"><i class="fa fa-check"></i></b>
+                    <span class="logo-compact"><i class="fa fa-check"></i></span>
+                    <span class="brand-title">
+                        <!-- <img src="/static/images/logo-text.png" alt=""> -->
+                        <div class="media">
+                            <span class="card-widget__icon"><i class="fa fa-check"></i></span>
+                            <div class="media-body">
+                                <h2 class="card-widget__title">물류운영</h2>                                
+                            </div>
+                        </div>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!--**********************************
+            Nav header end
+        ***********************************-->
+
+        <!--**********************************
+            Header start
+        ***********************************-->
+        <div class="header">    
+            <div class="header-content clearfix">
+                
+                <div class="nav-control">
+                    <div class="hamburger">
+                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+                    </div>
+                </div>
+                <div class="header-left">
+                    <div class="input-group icons">
+                        
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-clock-outline"></i></span>
+                        </div>
+                        <div class="text-center">
+                            <!-- <button type="button" class="btn mb-1 btn-black" onclick="location.href='{{url_for('main.reload_all')}}'">Update Data <span class="btn-icon-right"><i class="fa fa-undo"></i></span>
+                            </button>                            -->
+                        </div>
+                        <div class="drop-down animated flipInX d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <!--**********************************
+            Header end ti-comment-alt
+        ***********************************-->
+
+        <!--**********************************
+            Sidebar start
+        ***********************************-->
+        <div class="nk-sidebar">           
+            <div class="nk-nav-scroll">
+                <ul class="metismenu" id="menu">
+                    <li class="nav-label">Category</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Dashboard</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="{{url_for('main.index')}}">Home</a></li>
+                            <li><a href="{{url_for('excel.excelDownload', pDate='')}}">Excel Down</a></li>
+                            <li><a href="{{url_for('schedule.scheduleIndex')}}">Scheduler</a></li>
+                        </ul>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!--**********************************
+            Sidebar end
+        ***********************************-->
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Excel Down</a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">MOMS Excel File Down<span class="pull-right">
+                                    <button type="button" class="btn mb-1 btn-outline-info" onclick="excelSearch()">search</button>                                    
+                                </span></h4>
+                                <script>
+                                    function excelSearch(){
+                                        location.href="{{url_for('excel.excelSearch')}}"
+                                        document.getElementById("preloader").style.display ="block"                                       
+                                    }                                                                   
+                                </script>
+                                
+
+                                <div class="table-responsive">
+                                    <!-- <table class="table table-striped table-bordered zero-configuration"> -->
+                                    <table class="table table-striped table-bordered default-ordering">
+                                        <thead>
+                                            <tr>
+                                                <th>컷오프이름</th>
+                                                <th>차수</th>
+                                                <th>파일여부</th>
+                                                <th>주문건수</th>
+                                                <th>총오더</th>
+                                                <th>할당</th>
+                                                <th>첼로</th>
+                                                <th>미할당</th>
+                                                <th>이상발생</th>
+                                                <th>Mail</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in resultData%}
+                                            {% if item[7]=='N': %}
+                                            <tr class='table-primary'>
+                                                <td>{{item[0]}}</td>
+                                                <td>{{item[2]}}</td>
+                                                {% if item[8]=='N': %}
+                                                <td><a href="{{url_for('excel.makeExcel', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}" onclick=loadMomsMakeFile()>{{item[8]}}</a></td>
+                                                <td>{{item[10]}}</td>
+                                                <td>{{item[3]}}</td>
+                                                <td>{{item[4]}}</td>
+                                                <td>{{item[6]}}</td>
+                                                <td>{{item[5]}}</td>
+                                                <td>{{item[9]}}</td>
+                                                <td></td>                                                
+                                                {% else: %}
+                                                <td>{{item[8]}}<span class="pull-right"><a href="{{url_for('excel.deleteExcelFile',clsdate=item[1],cutseq=item[2],serialNo=item[0])}}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-close color-danger"></i></a></span></td>    
+                                                <td>{{item[10]}}</td>
+                                                <td><a href="{{url_for('main.downExcel2', type='total',  clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[3]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='inv',   clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[4]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='cello', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[6]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='noinv', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[5]}}</a></td>                                                
+                                                <td>{{item[9]}}</td>
+                                                <td><a href="{{url_for('excel.sendExcelMail',clsdate=item[1],cutseq=item[2],serialNo=item[0],celloCnt=item[6])}}"  onclick=loadMomsMakeFile() data-toggle="tooltip" data-placement="top" title="Cello_Mail"><i class="fa fa-envelope color-danger"></i></a></td>
+                                                {% endif %}
+                                                
+                                            {% else: %}
+                                            <tr class='table-danger'>
+                                                <td>{{item[0]}}</td>
+                                                <td>{{item[2]}}</td>
+                                                {% if item[8]=='N': %}
+                                                <td><a href="{{url_for('excel.makeExcel', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}" onclick=loadMomsMakeFile()>{{item[8]}}</a></td>
+                                                <td>{{item[10]}}</td>
+                                                <td>{{item[3]}}</td>
+                                                <td>{{item[4]}}</td>
+                                                <td>{{item[6]}}</td>
+                                                <td>{{item[5]}}</td>
+                                                <td>{{item[9]}}</td>
+                                                <td></td>
+                                                {% else: %}
+                                                <td>{{item[8]}}<span class="pull-right"><a href="{{url_for('excel.deleteExcelFile',clsdate=item[1],cutseq=item[2],serialNo=item[0])}}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-close color-danger"></i></a></span></td>    
+                                                <td>{{item[10]}}</td>
+                                                <td><a href="{{url_for('main.downExcel2', type='total',  clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[3]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='inv',   clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[4]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='cello', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[6]}}</a></td>
+                                                <td><a href="{{url_for('main.downExcel2', type='noinv', clsdate=item[1], cutseq=item[2], serialNo=item[0])}}">{{item[5]}}</a></td>                                                
+                                                <td>{{item[9]}}</td>
+                                                <td><a href="{{url_for('excel.sendExcelMail',clsdate=item[1],cutseq=item[2],serialNo=item[0],celloCnt=item[6])}}"  onclick=loadMomsMakeFile() data-toggle="tooltip" data-placement="top" title="Cello_Mail"><i class="fa fa-envelope color-danger"></i></a></td>    
+                                                {% endif %}                                                
+                                                
+                                                
+                                            {% endif %}
+                                            </tr>
+                                            {% endfor %}  
+                                        </tbody>
+                                        <script>
+                                            function loadMomsMakeFile(){
+                                                document.getElementById("preloader").style.display ="block"                                       
+                                            }                                    
+                                        </script>                                  
+                                        <!-- <tfoot>
+                                            <tr>
+                                                <th>컷오프이름</th>
+                                                <th>차수</th>
+                                                <th>파일여부</th>
+                                                <th>주문건수</th>
+                                                <th>총오더</th>
+                                                <th>할당</th>
+                                                <th>첼로</th>
+                                                <th>미할당</th>
+                                                <th>이상발생</th>
+                                            </tr>
+                                        </tfoot> -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- <div class="col-lg-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">송장번호 DOWN</h4>
+                                <div class="form-group">
+                                    <form action="{{url_for('excel.inputsongjang')}}" method="post" class="input-form">
+                                        <textarea class="textarea_editor form-control bg-light" id="textarea1" name="textarea1" onkeyup="count1()" rows="3" placeholder="일련번호를 붙여넣으세요"></textarea>
+                                        <P></P>
+                                        <input type="submit" value="DB저장" class="btn mb-1 btn-warning"><span class="pull-right"><label id="labelcnt1">저장된 데이터건수 : {{countData[0]}}</label></span>
+                                    </form>                                    
+                                </div>
+                                <h4 class="card-title" id="rowcount1"></h4>
+                                <script>
+                                    function count1(){
+                                        var x= document.getElementById("textarea1").value
+                                        var x3 = x.split('\n').length                                        
+                                        document.getElementById("rowcount1").innerHTML = x3+" 줄"
+                                    }
+                                </script>
+                            </div>                             
+                        </div>                        
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title text-white">일련번호 송장번호 붙여넣기</h2>
+                                <div class="form-group">
+                                    <form action="{{url_for('excel.inputsongjang1')}}" method="post" class="input-form">
+                                        <textarea class="textarea_editor form-control bg-light" id="textarea2" name="textarea2" onkeyup="count2()" rows="3" placeholder="일련번호와 송장번호를 붙여넣으세요"></textarea>
+                                        <P></P>
+                                        <input type="submit" value="DB저장" class="btn mb-1 btn-warning"><span class="pull-right"><label id="labelcnt2">저장된 데이터건수 : {{countData[1]}}</label></span>
+                                    </form>  
+                                </div>
+                                <h4 class="card-title" id="rowcount2"></h4>
+                                <script>
+                                    function count2(){
+                                        var x1= document.getElementById("textarea2").value
+                                        var x2 = x1.split('\n').length                                        
+                                        document.getElementById("rowcount2").innerHTML = x2+" 줄"
+                                    }
+                                </script>
+                            </div>                            
+                        </div>
+                    </div> -->
+                    <br>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">DB에 데이터 넣기 </h4>
+                                <form action="{{url_for('excel.excelupload')}}" method="post" enctype="multipart/form-data" >
+                                    <div class="form-group">
+                                        <input type="file"  class="form-control-file" name="excelUpload" placeholder="excelUpload">
+                                        <br>                                    
+                                        <input type="submit" style="width: 250px" value="MOMS 엑셀파일 DB저장" class="btn mb-1 btn-dark" onclick=loadMomsMakeFile()>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="labelcnt1">저장된 데이터건수 : {{countData[0]}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<b style="color:black">업로드 파일이름 : {{countData[4]}}</b> ) </label></span>                                        
+                                    </div>                                    
+                                </form>
+                                
+                                
+                                <input type="date" id="cello_date" value=''> 
+                                <script>
+                                    var returnVal = "{{resultDate}}"
+                                    var today = new Date()                                        
+                                    var year =""
+                                    var month=""
+                                    var day=""
+                                    
+                                    if(returnVal=="" || returnVal==null){
+                                        year = today.getFullYear()
+                                        month =('0'+(today.getMonth()+1)).slice(-2)
+                                        day = ('0' + today.getDate()).slice(-2)                                        
+                                    }else{
+                                        year = returnVal.substr(0,4)
+                                        month = returnVal.substr(4,2)
+                                        day = returnVal.substr(6,2)
+                                    }
+                                    var dateString = year+'-'+month+'-'+day
+                                    document.getElementById('cello_date').value = dateString
+                                    
+                                </script>
+                                <br><br>
+                                
+                                <button type="button" id="excelallDB" style="width: 250px" class="btn mb-1 btn-success" onclick=saveCelloAllData()>첼로 데이타 DB 저장</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label id="labelcnt1">저장된 데이터건수 : {{countData[1]}}     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<b style="color:black">저장된 기준일 : {{countData[3]}}</b> ) </label></span>
+                                <script>
+                                    function saveCelloAllData(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('excel.celloSaveDB', cDate='param1')}}".replace("param1",rdate)
+                                        document.getElementById("preloader").style.display ="block"                                       
+                                    }                
+                                </script>
+            
+                            </div>
+                        </div>
+                    </div>                    
+                </div>                    
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">출고완료 파일 만들기 </h4>
+                                <input type="button" style="width: 250px" value="CJ택배 출고완료 파일생성" class="btn mb-1 btn-warning" onclick="CJ_result_file_create()">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" style="width: 250px" value="출고처리중 (미출고) 파일생성" class="btn mb-1 btn-danger" onclick="processing_file_create()">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" style="width: 250px" value="팀프레시 출고완료 파일생성" class="btn mb-1 btn-secondary" onclick="team_fresh_file_create()">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" style="width: 250px" value="패킹합포 안된주문 파일생성" class="btn mb-1 btn-info" onclick="packing_X_file()">
+                                <script>
+                                    function CJ_result_file_create(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('main.downTxt', cDate='param1')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                    
+                                    function processing_file_create(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('main.downingTxt', cDate='param1')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                    
+                                    function team_fresh_file_create(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('main.downTxt2', cDate='param1')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                                                                   
+                                    function packing_X_file(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('main.packing_x', cDate='param1')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                                                                   
+                                </script>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Cello Excel File Down</h4>
+                                
+                                <button type="button" id="excelall" class="btn mb-1 btn-outline-dark" onclick="loadmakeCelloAllFile()">전체 다운 받기</button>  
+                                &nbsp;&nbsp;<button type="button" id="excelnormal" class="btn mb-1 btn-outline-primary" onclick="loadmakeCelloNormalFile()">일반출고</button>  
+                                &nbsp;&nbsp;<button type="button" id="excelbtqday" class="btn mb-1 btn-outline-info" onclick="loadmakeCelloBTQDayFile()">명품 당일출고</button>  
+                                &nbsp;&nbsp;<button type="button" id="excelbtqnor" class="btn mb-1 btn-outline-info" onclick="loadmakeCelloBTQNorFile()">명품 택배</button>  
+                                <P>
+                                <p><b style="color:black">전체다운받기</b> &nbsp;&nbsp;&nbsp;(필터 안걸림)
+                                <p><b style="color:black">일반출고</b>    &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(필터 배송처ID : 무신사,출고유형 : 일반출고 ,패킹완료)
+                                <p><b style="color:black">명품 당일출고</b>&nbsp;&nbsp;&nbsp;(필터 배송처ID : 무신사,출고유형 : 명품 당일출고 ,패킹완료)
+                                <p><b style="color:black">명품 택배</b>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(필터 배송처ID : 무신사,출고유형 : 명품 택배 ,패킹완료)
+                                    
+                                <script>
+                                    function loadmakeCelloAllFile(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('excel.celloAll', cDate='param1', cType='ALL')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                    
+                                    function loadmakeCelloNormalFile(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('excel.celloAll', cDate='param1', cType='NORMAL')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                    
+                                    function loadmakeCelloBTQDayFile(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('excel.celloAll', cDate='param1', cType='BTQDAY')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                                    
+                                    function loadmakeCelloBTQNorFile(){
+                                        var rdate = document.getElementById('cello_date').value.replace(/-/gi,"")
+                                        location.href="{{url_for('excel.celloAll', cDate='param1', cType='BTQNOR')}}".replace("param1",rdate)
+                                        // document.getElementById("preloader").style.display ="block"                                       
+                                    }                      
+                                </script>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>                    
+            </div>
+                
+
+
+
+
+
+
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+        
+        
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Designed & Developed by </p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <script src="/static/plugins/common/common.min.js"></script>
+    <script src="/static/js/custom.min.js"></script>
+    <script src="/static/js/settings.js"></script>
+    <script src="/static/js/gleek.js"></script>
+    <script src="/static/js/styleSwitcher.js"></script>
+
+    <script src="/static/plugins/tables/js/jquery.dataTables.min.js"></script>
+    <script src="/static/plugins/tables/js/datatable/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/plugins/tables/js/datatable-init/datatable-basic.min.js"></script>
+
+</body>
+
+</html>

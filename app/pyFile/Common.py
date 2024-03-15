@@ -36,7 +36,7 @@ def getMacAddr():
     return  result
 
 def getSlackToken():
-    reval = "xoxb-511986659687-2558335142900-25r5LhMFuMDcNwOAsKdtFIZZ"
+    reval = ""
     return reval
 
 def createDirectory(path): 
